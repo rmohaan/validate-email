@@ -1,0 +1,57 @@
+| Tool       | Command                        | Notes                     |
+| ---------- | ------------------------------ | ------------------------- |
+| `dig`      | `dig +short MX domain.com`     | Most compact output       |
+| `nslookup` | `nslookup -type=mx domain.com` | Available on most systems |
+| `host`     | `host -t mx domain.com`        | Simple and easy to read   |
+
+
+// Simple Shell Script to Find Valid Email Domains
+
+#!/bin/bash
+
+# Check if dig is installed
+if ! command -v dig &> /dev/null; then
+    echo "❌ 'dig' command not found. Please install 'dnsutils'."
+    exit 1
+fi
+
+# Input: file with email addresses or domains (one per line)
+INPUT_FILE="$1"
+
+if [[ ! -f "$INPUT_FILE" ]]; then
+    echo "❌ Input file not found: $INPUT_FILE"
+    echo "Usage: ./check_mx.sh input.txt"
+    exit 1
+fi
+
+echo "🔍 Checking MX records..."
+echo "--------------------------------------------"
+printf "%-35s | %-10s\n" "Domain" "MX Valid?"
+echo "--------------------------------------------"
+
+while IFS= read -r line || [[ -n "$line" ]]; do
+    # Trim whitespace
+    input=$(echo "$line" | xargs)
+
+    # Skip empty lines
+    [[ -z "$input" ]] && continue
+
+    # Extract domain from email or use as-is if already a domain
+    if [[ "$input" == *@* ]]; then
+        domain="${input##*@}"
+    else
+        domain="$input"
+    fi
+
+    # Check for MX records
+    mx_records=$(dig +short MX "$domain")
+
+    if [[ -n "$mx_records" ]]; then
+        printf "%-35s | %-10s\n" "$domain" "✅ Yes"
+    else
+        printf "%-35s | %-10s\n" "$domain" "❌ No"
+    fi
+
+done < "$INPUT_FILE"
+
+echo "--------------------------------------------"
