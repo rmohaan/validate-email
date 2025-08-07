@@ -14,12 +14,6 @@ public class DomainValidator {
         return hasMXRecord(domain);
     }
 
-    /**
-     * Checks if the domain has an MX (Mail Exchange) record.
-     *
-     * @param domain the domain to check
-     * @return true if the domain has an MX record, false otherwise
-     */
     private static boolean hasMXRecord(String domain) {
         try {
             Hashtable<String, String> env = new Hashtable<>();
