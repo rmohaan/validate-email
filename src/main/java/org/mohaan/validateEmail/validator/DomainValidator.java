@@ -14,10 +14,12 @@ public class DomainValidator {
         return hasMXRecord(domain);
     }
 
-    private static String getDomain(String email) {
-        return email.substring(email.indexOf("@") + 1);
-    }
-
+    /**
+     * Checks if the domain has an MX (Mail Exchange) record.
+     *
+     * @param domain the domain to check
+     * @return true if the domain has an MX record, false otherwise
+     */
     private static boolean hasMXRecord(String domain) {
         try {
             Hashtable<String, String> env = new Hashtable<>();
